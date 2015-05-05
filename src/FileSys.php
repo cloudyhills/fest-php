@@ -60,5 +60,17 @@ class FileSys {
 
     static function setOwner($path, $owner) {
         list($ownerString, $groupString) = explode(':', $owner);
+        $ownerString = trim($ownerString);
+        $groupString = trim($groupString);
+        
+        $retval = True;  // innocent until proven guilty
+        if ($ownerString != '0') {
+            $retval = chown($path, $ownerString);
+        }
+
+        if ($groupString != '0') {
+            $retval = chgrp($path, $ownerString);
+        }
+        return $retval;
     }
 }
