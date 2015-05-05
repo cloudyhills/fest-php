@@ -1,0 +1,24 @@
+{
+    "name": "cloudyhills/fest-php",
+    "type": "library",
+    "description": "PHP client for fest",
+    "keywords": ["fest", "files", "backup", "REST", "PHP"],
+    "homepage": "https://github.com/cloudyhills/fest-php/",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ed Giese",
+            "email": "edgiese@gmail.com",
+            "homepage": "http://edgiese.com/",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {"CloudyHills\\Fest\\": "src/"}
+    },
+    "require": {
+	    "monolog/monolog": ">=1.1.13",
+	    "guzzlehttp/guzzle": ">=5.2.0",
+        "phpunit/phpunit": ">=4.6.6"
+    }
+}
