@@ -12,11 +12,20 @@ class FestJobOptions {
     // "array"
     // "object"
     // "resource"
-    protected $options = ['async', 'recursive', 'path'];
+    protected $options = ['async', 'recurse', 'pathspec', 'name', 'omit', 'working_directory'];
     protected $logger;
+    protected $data;
 
     function __construct($logger) {
         $this->logger = $logger;
+        $this->data = [
+            'async' => False,
+            'recurse' => True,
+            'pathspec' => '.',
+            'name' => 'backup',
+            'working_directory' => '.',
+            'omit' => [],
+        ];
     }
 
     public function set($option, $value) {
@@ -24,14 +33,14 @@ class FestJobOptions {
             throw new LogicException("Unknown option $option");
 
         // TODO do some type checking
-        $this->$option = $value;
+        $this->data[$option] = $value;
     }
 
     public function get($option) {
         if (False === ($i = array_search($option, $this->options)))
             throw new LogicException("Unknown option $option");
 
-        return $this->$option;
+        return $this->data[$option];
     }
 
     public function sanitize() {

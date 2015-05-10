@@ -3,23 +3,29 @@
 namespace CloudyHills\Fest;
 
 class FileSys {
-    static function opendir($path) {
+    public $separator;
+
+    function __construct() {
+        $this->separator = '/';
+    }
+
+    function opendir($path) {
         return opendir($path);
     }
 
-    static function readdir($handle) {
+    function readdir($handle) {
         return readdir($handle);
     }
 
-    static function getOwner($path) {
+    function getOwner($path) {
         $intName = fileowner($path);
         $intGroup = filegroup($path);
         $ginfo = $intGroup == 0 ? '0' : posix_getgrgid($intGroup);
         $uinfo = $intName == 0 ? '0' : posix_getpwuid($intName);
-        return $uinfo('name') . ':' . $ginfo('name'); 
+        return $uinfo['name'] . ':' . $ginfo['name']; 
     }
 
-    static function getPerms($path) {
+    function getPerms($path) {
         $perms = fileperms($path);
 
         if (($perms & 0xC000) == 0xC000) { // Socket
@@ -58,7 +64,22 @@ class FileSys {
         return $info;
     }
 
-    static function setOwner($path, $owner) {
+    function getTime($path) {
+        return date('c', filemtime($path));
+    }
+
+    function getcwd() {
+        if (!($cwd = getcwd()))
+            throw new FileSystemException("Cannot get current working directory");
+        return $cwd;
+    }
+
+    function chdir($dir) {
+        if (!chdir($dir))
+            throw new FileSystemException("Cannot set current working directory to $dir");
+    }
+
+    function setOwner($path, $owner) {
         list($ownerString, $groupString) = explode(':', $owner);
         $ownerString = trim($ownerString);
         $groupString = trim($groupString);
@@ -72,5 +93,13 @@ class FileSys {
             $retval = chgrp($path, $ownerString);
         }
         return $retval;
+    }
+
+    function hashFile($type, $path) {
+        return hash_file($type, $path);
+    }
+
+    function getSize($path) {
+        return filesize($path);
     }
 }
