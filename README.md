@@ -26,14 +26,23 @@ In a PHP program, you can access `fest` services by creating an object of class 
     use \CloudyHills\Fest\FestBackupJob;
     use \CloudyHills\Fest\FestRestoreJob;
     use \CloudyHills\Fest\FestJobOptions;
+    
+    use Monolog\Logger;
 
     $options = new FestJobOptions();
     
-    // see full list of options below
-    $options->set('async', True);
+    $options->set('async', False);    // if True, use high level interface
+    $options->set('recurse', True);   // Recurse down directories
+    $options->set('pathspec', '*');   // file names, directories, like in linux command line
+    $options->set('working_directory', '/var/www/html');  // base directory to back up
+    $options->set('name', 'my_backup_2015_12_25');  // backup name.
+    $options->set('omit', ['.git/*']);  // pathspecs to ignore
 
-    $job = new FestBackupJob("my backup", '.', $options);
+    $log = new Logger('backup');
 
+    $job = new FestBackupJob($log, $options);
+    $job->start();
+    
     while (!$job->isFinished())
         echo "Raw Status: " . $job->getStatus();
 
