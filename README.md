@@ -20,7 +20,7 @@ You can load fest-php with composer.  You need to use the following lines to inc
 }
 ````
 
-In a PHP program, you can access `fest` services by creating an object of class `FestJob`.  Options for this job are determined by a `FestJobOptions` object.
+In a PHP program, you can access `fest` services by creating an object of classes `FestBackupJob` and `FestRestoreJob`.  Options for both of these objects are determined by a `FestJobOptions` object.
 
 ````
     use \CloudyHills\Fest\FestBackupJob;
@@ -28,16 +28,15 @@ In a PHP program, you can access `fest` services by creating an object of class 
     use \CloudyHills\Fest\FestJobOptions;
     
     use Monolog\Logger;
+    $log = new Logger('backup');
 
     $options = new FestJobOptions();
-    
+
     $options->set('recurse', True);   // Recurse down directories
     $options->set('pathspec', '*');   // file names, directories, like in linux command line
     $options->set('working_directory', '/var/www/html');  // base directory to back up
     $options->set('name', 'my_backup_2015_12_25');  // backup name.
     $options->set('omit', ['.git/*']);  // pathspecs to ignore
-
-    $log = new Logger('backup');
 
     $job = new FestBackupJob($log, $options);
     $job->start();
@@ -56,12 +55,22 @@ In a PHP program, you can access `fest` services by creating an object of class 
         // professional driver on closed course.  do not attempt.
         shell_exec("rm -rf *");
 
-        $job = new RestoreJob("my backup", $options);
-        while (!$job->isFinished())
-            echo "Raw Status: " . $job->getStatus();
+        $job = new RestoreJob($logger, $options);
+        $job->start();
+        while (job->status() == FestBackupJob::WORKING) {
+            $status = $job->getFullStatus();
+            echo "\r";
+            echo "{$status['num_files']} files   ";
+            echo "{$status['num_directories']} directories   ";
+            echo "uploaded  {$status['num_bytes_uploaded']}";
+            echo " of {$status['num_bytes_total']} bytes.";
+        }
+        echo "\n";
 
         if ($job->status() == FestRestoreJob::SUCCESS)
             echo "phew.\n";
+        else
+            echo "you are SOOOOO screwed.\n";
     } else {
         "Backup Error Occurred: " . $job->getError() . "\n"
     }
