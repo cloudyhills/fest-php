@@ -31,7 +31,6 @@ In a PHP program, you can access `fest` services by creating an object of class 
 
     $options = new FestJobOptions();
     
-    $options->set('async', False);    // if True, use high level interface
     $options->set('recurse', True);   // Recurse down directories
     $options->set('pathspec', '*');   // file names, directories, like in linux command line
     $options->set('working_directory', '/var/www/html');  // base directory to back up
@@ -43,8 +42,15 @@ In a PHP program, you can access `fest` services by creating an object of class 
     $job = new FestBackupJob($log, $options);
     $job->start();
     
-    while (!$job->isFinished())
-        echo "Raw Status: " . $job->getStatus();
+    while (job->status() == FestBackupJob::WORKING) {
+        $status = $job->getFullStatus();
+        echo "\r";
+        echo "{$status['num_files']} files   ";
+        echo "{$status['num_directories']} directories   ";
+        echo "uploaded  {$status['num_bytes_uploaded']}";
+        echo " of {$status['num_bytes_total']} bytes.";
+    }
+    echo "\n";
 
     if ($job->status() == FestBackupJob::SUCCESS) {
         // professional driver on closed course.  do not attempt.
@@ -56,6 +62,8 @@ In a PHP program, you can access `fest` services by creating an object of class 
 
         if ($job->status() == FestRestoreJob::SUCCESS)
             echo "phew.\n";
+    } else {
+        "Backup Error Occurred: " . $job->getError() . "\n"
     }
 ````
 
