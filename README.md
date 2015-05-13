@@ -70,7 +70,7 @@ In a PHP program, you can access `fest` services by creating an object of classe
         if ($job->status() == FestRestoreJob::SUCCESS)
             echo "phew.\n";
         else
-            echo "you are SOOOOO screwed.\n";
+            echo "OH NOES!!!111!!1!1  you are SOOOOO screwed!!!!\n";
     } else {
         "Backup Error Occurred: " . $job->getError() . "\n"
     }
